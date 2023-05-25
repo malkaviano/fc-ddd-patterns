@@ -61,7 +61,7 @@ describe('Order repository test', () => {
     });
   });
 
-  describe('find order', () => {
+  describe('find', () => {
     describe('when order exists', () => {
       it('returns the order', async () => {
         const { order } = await createOrder();
@@ -82,6 +82,18 @@ describe('Order repository test', () => {
           'Order not found'
         );
       });
+    });
+  });
+
+  describe('findAll', () => {
+    it('returns all orders', async () => {
+      const { order } = await createOrder();
+
+      const orderRepository = new OrderRepository();
+
+      const result = await orderRepository.findAll();
+
+      expect(result).toStrictEqual([order]);
     });
   });
 });

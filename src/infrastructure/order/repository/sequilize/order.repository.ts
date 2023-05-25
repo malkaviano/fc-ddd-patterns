@@ -1,8 +1,9 @@
-import Order from "../../../../domain/checkout/entity/order";
-import OrderItemModel from "./order-item.model";
-import OrderModel from "./order.model";
+import Order from '../../../../domain/checkout/entity/order';
+import OrderItemModel from './order-item.model';
+import OrderModel from './order.model';
+import OrderRepositoryInterface from '../../../../domain/checkout/repository/order-repository.interface';
 
-export default class OrderRepository {
+export default class OrderRepository implements OrderRepositoryInterface {
   async create(entity: Order): Promise<void> {
     await OrderModel.create(
       {
@@ -21,5 +22,17 @@ export default class OrderRepository {
         include: [{ model: OrderItemModel }],
       }
     );
+  }
+
+  update(entity: Order): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  find(id: string): Promise<Order> {
+    throw new Error('Method not implemented.');
+  }
+
+  findAll(): Promise<Order[]> {
+    throw new Error('Method not implemented.');
   }
 }

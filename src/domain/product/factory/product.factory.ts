@@ -1,7 +1,7 @@
-import Product from "../entity/product";
-import ProductInterface from "../entity/product.interface";
-import { v4 as uuid } from "uuid";
-import ProductB from "../entity/product-b";
+import Product from '../entity/product';
+import ProductInterface from '../entity/product.interface';
+import { v4 as uuid } from 'uuid';
+import ProductB from '../entity/product-b';
 
 export default class ProductFactory {
   public static create(
@@ -10,12 +10,12 @@ export default class ProductFactory {
     price: number
   ): ProductInterface {
     switch (type) {
-      case "a":
+      case 'a':
         return new Product(uuid(), name, price);
-      case "b":
+      case 'b':
         return new ProductB(uuid(), name, price);
       default:
-        throw new Error("Product type not supported");
+        throw new Error('Product type not supported');
     }
   }
 }

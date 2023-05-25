@@ -96,6 +96,61 @@ describe('Order repository test', () => {
       expect(result).toStrictEqual([order]);
     });
   });
+
+  describe('update', () => {
+    it('changes the order', async () => {
+      const { order } = await createOrder();
+
+      const orderRepository = new OrderRepository();
+
+      const productRepository = new ProductRepository();
+
+      const product = new Product('456', 'Product 2', 20);
+
+      await productRepository.create(product);
+
+      const orderItem = new OrderItem(
+        '2',
+        product.name,
+        product.price,
+        product.id,
+        3
+      );
+
+      order.items.push(orderItem);
+
+      await orderRepository.update(order);
+
+      const result = await OrderModel.findOne({
+        where: { id: order.id },
+        include: ['items'],
+      });
+
+      expect(result.toJSON()).toStrictEqual({
+        id: '123',
+        customer_id: '123',
+        total: 80,
+        items: [
+          {
+            id: '1',
+            name: 'Product 1',
+            price: 10,
+            quantity: 2,
+            order_id: '123',
+            product_id: '123',
+          },
+          {
+            id: '2',
+            name: 'Product 2',
+            price: 20,
+            quantity: 3,
+            order_id: '123',
+            product_id: '456',
+          },
+        ],
+      });
+    });
+  });
 });
 
 async function createOrder() {

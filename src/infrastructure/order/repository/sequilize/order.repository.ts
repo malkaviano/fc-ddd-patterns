@@ -2,6 +2,7 @@ import Order from '../../../../domain/checkout/entity/order';
 import OrderItemModel from './order-item.model';
 import OrderModel from './order.model';
 import OrderRepositoryInterface from '../../../../domain/checkout/repository/order-repository.interface';
+import OrderItem from '../../../../domain/checkout/entity/order_item';
 
 export default class OrderRepository implements OrderRepositoryInterface {
   async create(entity: Order): Promise<void> {
@@ -24,15 +25,29 @@ export default class OrderRepository implements OrderRepositoryInterface {
     );
   }
 
-  update(entity: Order): Promise<void> {
+  async find(id: string): Promise<Order> {
+    try {
+      const orderModel = await OrderModel.findOne({
+        where: { id },
+        include: OrderItemModel,
+        rejectOnEmpty: true,
+      });
+
+      const orderItems = orderModel.items.map((i) => {
+        return new OrderItem(i.id, i.name, i.price, i.product_id, i.quantity);
+      });
+
+      return new Order(orderModel.id, orderModel.customer_id, orderItems);
+    } catch (error) {
+      throw new Error('Order not found');
+    }
+  }
+
+  async findAll(): Promise<Order[]> {
     throw new Error('Method not implemented.');
   }
 
-  find(id: string): Promise<Order> {
-    throw new Error('Method not implemented.');
-  }
-
-  findAll(): Promise<Order[]> {
+  async update(entity: Order): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

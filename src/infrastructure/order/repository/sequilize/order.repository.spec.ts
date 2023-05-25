@@ -37,28 +37,7 @@ describe('Order repository test', () => {
   });
 
   it('should create a new order', async () => {
-    const customerRepository = new CustomerRepository();
-    const customer = new Customer('123', 'Customer 1');
-    const address = new Address('Street 1', 1, 'Zipcode 1', 'City 1');
-    customer.changeAddress(address);
-    await customerRepository.create(customer);
-
-    const productRepository = new ProductRepository();
-    const product = new Product('123', 'Product 1', 10);
-    await productRepository.create(product);
-
-    const orderItem = new OrderItem(
-      '1',
-      product.name,
-      product.price,
-      product.id,
-      2
-    );
-
-    const order = new Order('123', '123', [orderItem]);
-
-    const orderRepository = new OrderRepository();
-    await orderRepository.create(order);
+    const { order, orderItem } = await createOrder();
 
     const orderModel = await OrderModel.findOne({
       where: { id: order.id },
@@ -81,4 +60,54 @@ describe('Order repository test', () => {
       ],
     });
   });
+
+  describe('find order', () => {
+    describe('when order exists', () => {
+      it('returns the order', async () => {
+        const { order } = await createOrder();
+
+        const orderRepository = new OrderRepository();
+
+        const result = await orderRepository.find(order.id);
+
+        expect(result).toStrictEqual(order);
+      });
+    });
+
+    describe('when order does not exist', () => {
+      it('throws not found error', async () => {
+        const orderRepository = new OrderRepository();
+
+        await expect(orderRepository.find('no_id')).rejects.toThrow(
+          'Order not found'
+        );
+      });
+    });
+  });
 });
+
+async function createOrder() {
+  const customerRepository = new CustomerRepository();
+  const customer = new Customer('123', 'Customer 1');
+  const address = new Address('Street 1', 1, 'Zipcode 1', 'City 1');
+  customer.changeAddress(address);
+  await customerRepository.create(customer);
+
+  const productRepository = new ProductRepository();
+  const product = new Product('123', 'Product 1', 10);
+  await productRepository.create(product);
+
+  const orderItem = new OrderItem(
+    '1',
+    product.name,
+    product.price,
+    product.id,
+    2
+  );
+
+  const order = new Order('123', '123', [orderItem]);
+
+  const orderRepository = new OrderRepository();
+  await orderRepository.create(order);
+  return { order, orderItem };
+}
